@@ -67,19 +67,29 @@ Full architecture detail: `~/.claude/plans/you-are-a-senior-glimmering-pinwheel.
 - [ ] Mock fetch unit tests for normalization + token caching
 - [ ] One optional gated integration test against real Spotify
 
+### React components (1:1 from `.pen` — see `DESIGN.md` §Reusable components)
+- [ ] `<ActivityTile />` — radio item; states: default / hover / focused / selected
+- [ ] `<PrimaryButton />` — pill CTA; states: default / disabled
+- [ ] `<MoodChip />` — single chip from `Tribe.mood.keywords`
+- [ ] `<AttributeMeter />` — wraps native `<meter>` + numeric label (never color-alone)
+- [ ] `<TrackItem />` — **Client Component**; states: paused / playing / no-preview
+  - [ ] Audio playback via `<audio>` + React state; auto-pause previously playing track
+  - [ ] `aria-pressed`, `aria-label="Play preview of {title}"`, space key toggles
+  - [ ] Graceful "no preview available" state when `previewUrl` is null (`opacity: 0.3`, `cursor: not-allowed`, tooltip)
+  - [ ] Secondary "Open in Spotify" link with `external-link` icon, always present
+- [ ] `<PhasedMessage />` — cycles 3 messages every ~600ms; respects `prefers-reduced-motion`
+
 ### Routes & UI
-- [ ] Home page `/`: `<fieldset>` radiogroup with 6 tiles + `<button>` Generate (disabled until selection)
+- [ ] Home page `/`: `<fieldset>` radiogroup with 6 `<ActivityTile />` + `<PrimaryButton />` (disabled until selection)
   - [ ] Keyboard: Tab → arrow keys within tiles → Tab → Generate → Enter
   - [ ] Visible focus rings everywhere
-- [ ] `app/tribe/[activityId]/loading.tsx`: phased messages, `role="status" aria-live="polite"`, `@media (prefers-reduced-motion: reduce)` fallback
+- [ ] `app/tribe/[activityId]/loading.tsx`: `<PhasedMessage />` inside `role="status" aria-live="polite"`
 - [ ] `app/tribe/[activityId]/page.tsx`: Server Component, runs pipeline, renders Tribe screen
-  - [ ] Identity (`<h1>`, tagline, description, decorative emoji `aria-hidden="true"`)
-  - [ ] Attribute bars using `<meter>` with numeric label
-  - [ ] Tracks as `<ol>` with album art `alt` text, "Open in Spotify" links
-  - [ ] Client component `<TrackItem>` for play/pause of 30s preview via `<audio>` + `previewUrl`
-    - [ ] `aria-pressed`, `aria-label="Play preview of {title}"`, space key toggles
-    - [ ] Auto-pause previously playing track when a new one starts
-    - [ ] Graceful "no preview available" state when `previewUrl` is null (disabled icon + tooltip)
+  - [ ] Identity header (`<h1>`, tagline, description, decorative emoji `aria-hidden="true"`)
+  - [ ] Mood keywords row of `<MoodChip />`
+  - [ ] 5 `<AttributeMeter />` (Energy, Tempo, Valence, Danceability, Acousticness)
+  - [ ] `<ol>` of `<TrackItem />` for 10–20 tracks with album art `alt`
+  - [ ] Footer with regenerate `<PrimaryButton />` (mints new seed)
 
 ### Tests
 - [ ] Playwright smoke test: Home → click tile → click Generate → see Generating → see Tribe with real tracks
