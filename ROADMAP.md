@@ -9,6 +9,7 @@ Full architecture detail: `~/.claude/plans/you-are-a-senior-glimmering-pinwheel.
 - [x] `CLAUDE.md` created
 - [x] `ROADMAP.md` created
 - [x] `ARCHITECTURE.md` created
+- [x] Sprint 0.5 — Design (Pencil `.pen`, tokens, 3 screens × 2 breakpoints, 8 reusable components, `DESIGN.md` rationale)
 - [ ] Sprint 0 — Foundations
 - [ ] Sprint 1 — Vertical slice
 - [ ] Sprint 2 — Catalog + identity quality
@@ -75,6 +76,10 @@ Full architecture detail: `~/.claude/plans/you-are-a-senior-glimmering-pinwheel.
   - [ ] Identity (`<h1>`, tagline, description, decorative emoji `aria-hidden="true"`)
   - [ ] Attribute bars using `<meter>` with numeric label
   - [ ] Tracks as `<ol>` with album art `alt` text, "Open in Spotify" links
+  - [ ] Client component `<TrackItem>` for play/pause of 30s preview via `<audio>` + `previewUrl`
+    - [ ] `aria-pressed`, `aria-label="Play preview of {title}"`, space key toggles
+    - [ ] Auto-pause previously playing track when a new one starts
+    - [ ] Graceful "no preview available" state when `previewUrl` is null (disabled icon + tooltip)
 
 ### Tests
 - [ ] Playwright smoke test: Home → click tile → click Generate → see Generating → see Tribe with real tracks
@@ -95,7 +100,7 @@ Full architecture detail: `~/.claude/plans/you-are-a-senior-glimmering-pinwheel.
   - [ ] Identity header with icon styling
   - [ ] Attribute bars visual polish
   - [ ] Album art rendered with descriptive `alt`
-  - [ ] Prominent "Open in Spotify" action per track (no in-app preview/play — MVP scope)
+  - [ ] Play/pause button polish: progress indicator (30s ring), nicer "no preview" state
 - [ ] Determinism golden-file test in CI (snapshot tribe for fixed inputs, byte-for-byte check)
 - [ ] Manual VoiceOver pass on all three screens
 

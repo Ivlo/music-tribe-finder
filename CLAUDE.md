@@ -60,9 +60,13 @@ Examples:
 `.env.local` (gitignored) holds `SPOTIFY_CLIENT_ID` and `SPOTIFY_CLIENT_SECRET`. Never log. Never expose to the client bundle.
 
 ## Out of scope (MVP)
-User accounts, multi-source, free-text activities, in-app player, LLM-generated content, social features, i18n. See plan file for rationale.
+User accounts, multi-source, free-text activities, full Spotify Web Playback (requires Premium login), LLM-generated content, social features, i18n. See plan file for rationale.
+
+**In scope**: 30s preview playback via the `preview_url` field on Spotify tracks (public MP3, no login). `null` when Spotify doesn't provide a preview for that track — handled as a disabled state.
 
 ## Reference
 - Current sprint tasks + progress: `./ROADMAP.md` (check first to know what's done and what's next)
 - Architecture reference: `./ARCHITECTURE.md` (modules, data contracts, data flow, testing strategy, a11y requirements)
+- Design system + decisions: `./DESIGN.md` (visual rules, tokens, components, Pencil gotchas, design→code handoff)
+- Visual source of truth: `./design/design.pen` (open via Pencil MCP) + `./design/screenshots/` (PNG exports per screen)
 - Original planning notes: `~/.claude/plans/you-are-a-senior-glimmering-pinwheel.md` (historical, optional)
