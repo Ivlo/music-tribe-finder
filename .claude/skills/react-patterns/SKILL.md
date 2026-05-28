@@ -35,12 +35,13 @@ I/O is server-side — the browser never fetches data. See `CLAUDE.md`,
 - Code-split heavy client-only widgets with `next/dynamic`, not `React.lazy`.
 
 ### Accessibility — a hard requirement (WCAG 2.1 AA)
-- Semantic HTML first, ARIA second: `<button>`, `<fieldset>`/`<legend>`,
-  `<ol>`, native `<meter>` — never `<div onClick>`.
-- Every interactive element is keyboard-operable with a visible focus ring.
-- Decorative emoji/icons get `aria-hidden="true"`; meaningful images get real
-  `alt`. Never convey state by color alone (pair with text or icon).
-- `eslint-plugin-jsx-a11y` runs at error level — code must pass `pnpm lint`.
+Accessibility is non-negotiable, but its rules are NOT duplicated here. The full
+checklist, the project's a11y commands, and the pass bar live in the **`a11y`
+skill** (which defers to `ARCHITECTURE.md` §Accessibility as source of truth).
+- Baseline reflexes while writing: semantic HTML first / ARIA second, every
+  interactive element keyboard-operable with a visible focus ring, never state
+  by color alone, decorative icons `aria-hidden`, meaningful images get `alt`.
+- Before finishing UI work, run the **`a11y`** audit (`/a11y`).
 - Component tests use Vitest + React Testing Library with role-based queries
   (`getByRole`, `getByLabelText`) — if the test can find it, it's accessible.
 

@@ -38,8 +38,8 @@ Target component: **$ARGUMENTS**
      PhasedMessage timers). Follow react-patterns.
 3. **Create the folder `src/components/<Name>/`** (Name = $ARGUMENTS):
    - `<Name>.tsx` — typed props (no `any`), semantic HTML, Tailwind classes
-     mapped 1:1 from the design, and all the accessibility from react-patterns
-     (roles, `aria-*`, visible focus ring, no color-only state).
+     mapped 1:1 from the design, and the accessibility required by the **`a11y`**
+     skill (roles, `aria-*`, visible focus ring, no color-only state).
    - `<Name>.test.tsx` — Vitest + React Testing Library:
      - renders with sensible props
      - asserts each visual state present in the design
