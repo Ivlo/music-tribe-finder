@@ -49,6 +49,30 @@ the operational audit; `react-patterns` defers here for accessibility.
 - `prefers-reduced-motion: reduce` collapses the Generating animation
   (PhasedMessage) to static.
 
+## Patterns (before / after)
+
+```jsx
+// Icon-only control (TrackItem play) — wrong
+<button onClick={toggle}><PlayIcon /></button>
+// correct
+<button onClick={toggle} aria-pressed={playing}
+        aria-label={`Play preview of ${title}`}>
+  <PlayIcon aria-hidden="true" />
+</button>
+
+// Async / loading region (Generating, loading.tsx) — wrong
+{isLoading && <PhasedMessage />}
+// correct
+<div role="status" aria-live="polite">
+  {isLoading ? <PhasedMessage /> : null}
+</div>
+
+// State conveyed by color alone — wrong
+<span className="text-red-500" />
+// correct (pair color with text/icon — e.g. the no-preview track state)
+<span className="text-red-500">No preview available</span>
+```
+
 ## Running the audit (use the project's tooling — not axe-cli)
 1. Read the changed `.tsx` files in the diff.
 2. `pnpm lint` — eslint-plugin-jsx-a11y (static checks).
