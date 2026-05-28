@@ -69,4 +69,5 @@ User accounts, multi-source, free-text activities, full Spotify Web Playback (re
 - Architecture reference: `./ARCHITECTURE.md` (modules, data contracts, data flow, testing strategy, a11y requirements)
 - Design system + decisions: `./DESIGN.md` (visual rules, tokens, components, Pencil gotchas, design→code handoff)
 - Visual source of truth: `./design/design.pen` (open via Pencil MCP) + `./design/screenshots/` (PNG exports per screen)
+- Dev tooling: `./.claude/skills/` (`react-patterns`, `pen-to-component`, `a11y`) + `./.claude/agents/` (`code-reviewer`). Mental model — skills = reusable recipes (invocable by anyone, including agents); agents = isolated-context workers. An agent can call a skill, but not another agent. Accessibility is centralized in the `a11y` skill (spec lives in `ARCHITECTURE.md`).
 - Original planning notes: `~/.claude/plans/you-are-a-senior-glimmering-pinwheel.md` (historical, optional)

@@ -68,6 +68,7 @@ Full architecture detail: `~/.claude/plans/you-are-a-senior-glimmering-pinwheel.
 - [ ] One optional gated integration test against real Spotify
 
 ### React components (1:1 from `.pen` — see `DESIGN.md` §Reusable components)
+- [ ] Create the `component-builder` agent (preloads `react-patterns` + `pen-to-component` + `a11y`) — built after the Sprint 0 scaffold exists, used to build the components below in parallel
 - [ ] `<ActivityTile />` — radio item; states: default / hover / focused / selected
 - [ ] `<PrimaryButton />` — pill CTA; states: default / disabled
 - [ ] `<MoodChip />` — single chip from `Tribe.mood.keywords`
