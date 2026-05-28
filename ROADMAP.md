@@ -33,13 +33,27 @@ Full architecture detail: `~/.claude/plans/you-are-a-senior-glimmering-pinwheel.
 
 ## Sprint 0 — Foundations (~1 day)
 
+> **Blocking spike — do this FIRST.** In Nov 2024 Spotify restricted several Web
+> API endpoints for new / dev-mode apps: `/recommendations`, `/audio-features`,
+> and `preview_url` is often `null`. The fallback the plan assumed (`/search` +
+> `/audio-features`) may *also* be unavailable. Empirically verify what a NEW
+> client ID can access **before** designing the pipeline — the result decides the
+> compiler/composer architecture.
+
+- [ ] Create Spotify developer app at https://developer.spotify.com/dashboard
+- [ ] Add `SPOTIFY_CLIENT_ID` + `SPOTIFY_CLIENT_SECRET` to `.env.local` (gitignored)
+- [ ] **Spike**: with the new client ID, test (curl/script) which endpoints actually
+      work — `/v1/recommendations`, `/v1/audio-features` — and whether `preview_url`
+      comes back populated
+- [ ] **Decide the data strategy from the spike result**:
+  - works → original plan (live audio-feature targeting via recommendations/search)
+  - blocked → contingency: curated track pools per activity and/or precomputed audio
+    features from a static dataset (no live feature calls); `preview_url` already
+    degrades to a disabled state
 - [ ] Run `npx create-next-app@latest` → App Router, TypeScript, ESLint, Tailwind enabled, `src/` directory yes
 - [ ] Verify `eslint-plugin-jsx-a11y` rules are at error level in ESLint config
 - [ ] Set up Prettier (+ `eslint-config-prettier` so ESLint and Prettier don't fight)
 - [ ] Set up Vitest + React Testing Library + `@testing-library/jest-dom` + `vitest-axe`
-- [ ] Create Spotify developer app at https://developer.spotify.com/dashboard
-- [ ] Add `SPOTIFY_CLIENT_ID` + `SPOTIFY_CLIENT_SECRET` to `.env.local` (add to `.gitignore` if not already)
-- [ ] Verify `/v1/recommendations` works for this client ID; if not, switch to `/v1/search` + `/v1/audio-features` fallback now
 - [ ] Link project to Vercel
 - [ ] Set up CI workflow: `pnpm lint && pnpm typecheck && pnpm test`
 - [ ] Set up Playwright + `@axe-core/playwright` (config only; tests in Sprint 1)

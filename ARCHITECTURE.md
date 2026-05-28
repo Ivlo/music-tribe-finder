@@ -297,7 +297,7 @@ Claude Code Stop hook runs lint + typecheck only.
 
 | Risk | Mitigation |
 |---|---|
-| Spotify `/recommendations` unavailable for new client IDs | Verified in Sprint 0. Fallback path: `/search` + `/audio-features` with client-side filtering. |
+| Spotify restricted `/recommendations`, `/audio-features`, and `preview_url` for new/dev apps (Nov 2024) — the `/search` + `/audio-features` fallback may *also* be unavailable | Blocking spike in Sprint 0 verifies what a new client ID can actually access. Contingency if blocked: curated track pools per activity and/or precomputed audio features from a static dataset (no live feature calls); `preview_url` already degrades to a disabled state. |
 | Spotify ToS on caching metadata | No persistence in MVP. Edge cache TTL ≤ 24h. |
 | Sparse Spotify results for niche profiles | Constraint-relaxation loop in `profile-compiler`. Bounded retry count. |
 | Determinism breaks (e.g. `Math.random()` slips into pure module) | Golden-file test in CI. Lint rule: no `Math.random()` / `Date.now()` in `src/lib/`. |
