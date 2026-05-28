@@ -286,6 +286,11 @@ serious/critical violations per screen.
 | Accessibility | Zero serious/critical violations on each screen | `@axe-core/playwright` in smoke test |
 | Determinism | Golden tribe snapshot | Byte-for-byte assertion in CI |
 
+**Runner**: Vitest + React Testing Library + `@testing-library/jest-dom` + `vitest-axe`.
+**Where tests run**: pre-commit = lint + typecheck + unit + golden (fast); CI = all,
+including E2E (Playwright + axe); E2E is excluded from pre-commit (too slow). The
+Claude Code Stop hook runs lint + typecheck only.
+
 ---
 
 ## Risks (engineering)

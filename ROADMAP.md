@@ -35,12 +35,28 @@ Full architecture detail: `~/.claude/plans/you-are-a-senior-glimmering-pinwheel.
 
 - [ ] Run `npx create-next-app@latest` → App Router, TypeScript, ESLint, Tailwind enabled, `src/` directory yes
 - [ ] Verify `eslint-plugin-jsx-a11y` rules are at error level in ESLint config
+- [ ] Set up Prettier (+ `eslint-config-prettier` so ESLint and Prettier don't fight)
+- [ ] Set up Vitest + React Testing Library + `@testing-library/jest-dom` + `vitest-axe`
 - [ ] Create Spotify developer app at https://developer.spotify.com/dashboard
 - [ ] Add `SPOTIFY_CLIENT_ID` + `SPOTIFY_CLIENT_SECRET` to `.env.local` (add to `.gitignore` if not already)
 - [ ] Verify `/v1/recommendations` works for this client ID; if not, switch to `/v1/search` + `/v1/audio-features` fallback now
 - [ ] Link project to Vercel
 - [ ] Set up CI workflow: `pnpm lint && pnpm typecheck && pnpm test`
 - [ ] Set up Playwright + `@axe-core/playwright` (config only; tests in Sprint 1)
+
+---
+
+## Dev tooling & hooks (after Sprint 0)
+
+Toolchain (Prettier, Vitest, ESLint) must exist first — these hooks call those commands.
+
+**Claude Code hooks** (`.claude/settings.json`):
+- [ ] PostToolUse: `prettier --write` on edited `.ts`/`.tsx` (auto-format, non-blocking)
+- [ ] Stop: lint + typecheck only (fast feedback; no tests)
+- [ ] Verify the exact Stop-hook JSON / exit-code schema when installing (decision/reason nesting is finicky)
+
+**Pre-commit gate** (a Git-level hook, not a Claude hook — mechanism TBD: decide at install between husky, `simple-git-hooks`, lint-staged, or raw `.git/hooks/`):
+- [ ] pre-commit: lint + typecheck + unit + golden determinism (fast local gate; E2E excluded)
 
 ---
 
