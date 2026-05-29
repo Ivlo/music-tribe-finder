@@ -21,7 +21,10 @@ Full architecture detail: `~/.claude/plans/you-are-a-senior-glimmering-pinwheel.
 
 ## Locked decisions
 
-- Spotify tracks only (client_credentials flow, secret server-side)
+> Index only. The *why* behind consequential decisions lives in `DECISIONS.md`.
+
+- Deezer as track source (editorial playlists + genre charts) — see ADR-002
+- Static curated pools, attributes authored, no live audio-features — see ADR-001
 - Preset activity list (~20–30 activities, no free text)
 - Next.js (App Router) + TypeScript + Tailwind, deployed on Vercel
 - No DB, no accounts — tribes reproducible from URL: `/tribe/[activityId]?seed=...`

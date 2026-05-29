@@ -66,6 +66,7 @@ User accounts, multi-source, free-text activities, full Spotify Web Playback (re
 
 ## Reference
 - Current sprint tasks + progress: `./ROADMAP.md` (check first to know what's done and what's next)
+- Architecture decision log: `./DECISIONS.md` (the *why* behind non-obvious, contested choices — read before re-litigating a decision)
 - Architecture reference: `./ARCHITECTURE.md` (modules, data contracts, data flow, testing strategy, a11y requirements)
 - Design system + decisions: `./DESIGN.md` (visual rules, tokens, components, Pencil gotchas, design→code handoff)
 - Visual source of truth: `./design/design.pen` (open via Pencil MCP) + `./design/screenshots/` (PNG exports per screen)
