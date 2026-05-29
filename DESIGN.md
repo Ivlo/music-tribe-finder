@@ -120,7 +120,7 @@ Decision: subtle radius on cards (8), pill on CTAs (full). Pure-sharp
 | PrimaryButton/Disabled | `f7RrRl` | Same shape, `opacity: 0.35` |
 | MoodChip | `g6903` | Tribe mood keywords (pill, `$accent-high-muted` fill) |
 | AttributeMeter | `PLwa7` | Label + bar + numeric value |
-| TrackItem | `kIrqn` | Play button + art + title/artist + spotify icon |
+| TrackItem | `kIrqn` | Play button + art + title/artist + Deezer link icon |
 | PhasedMessage | `bPitO` | Generating screen heading + dots |
 
 The Tribe screen's track rows are **inline frames**, not refs to
@@ -131,9 +131,10 @@ implementing in code, treat `kIrqn` as the single source.
 
 ## TrackItem three states
 
-Designed because Spotify returns `preview_url: null` for ~40–60% of
-tracks. The "no preview" state needs first-class design, not an
-afterthought.
+Deezer populates `preview` reliably (spike: ~100% coverage — see
+`DECISIONS.md` ADR-002), so previews are the norm and the play button is
+the primary interaction. The "no preview" state is kept as a **defensive
+fallback** for the rare null, not a frequently-hit case.
 
 | State | Visual | Where shown in `.pen` |
 |---|---|---|
@@ -141,9 +142,13 @@ afterthought.
 | Playing | Circular `$accent-high` button (orange), `pause` icon `$text-inverse` (dark) | Track 2 (Desktop + Mobile) |
 | No preview | Same as paused, `opacity: 0.3`, `cursor: not-allowed` | Track 3 (Desktop + Mobile) |
 
-The "Open in Spotify" action persists in all 3 states as a small
+The "Open in Deezer" action persists in all 3 states as a small
 `external-link` icon on the right (secondary, never the primary
 interaction).
+
+> **Pending `.pen` update:** the `kIrqn` node still carries a Spotify brand
+> icon. Swapping it to a Deezer/neutral icon is a follow-up (needs the icon
+> asset verified in the kit first).
 
 ---
 
@@ -158,7 +163,7 @@ in CI (Sprint 1+).
 - Never color-alone: attribute meter has fill **and** numeric value;
   TrackItem state has color **and** icon shape (play vs. pause).
 - Disabled state uses opacity + cursor, not just color.
-- Icon-only buttons (spotify external-link, play/pause) need
+- Icon-only buttons (Deezer external-link, play/pause) need
   `aria-label` in code — design ensures button area is sufficient.
 
 ---
@@ -231,7 +236,7 @@ When implementing the design in Next.js + Tailwind:
 
 ## What's NOT designed (deferred)
 
-- Error states (network failure, sparse Spotify results) — Sprint 3
+- Error states (sparse/empty pool, missing preview) — Sprint 3
 - Empty states — Sprint 3
 - Settings / account / login — out of MVP
 - Onboarding — out of MVP
