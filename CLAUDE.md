@@ -1,29 +1,31 @@
 # Music Tribe Finder
 
 A web MVP that turns an activity (e.g. "Snowboard", "Coding") into a curated
-music "tribe": identity, mood/energy attributes, and 10–20 Spotify tracks.
+music "tribe": identity, mood/energy attributes, and 10–20 Deezer tracks.
 
 ## Stack
 - Next.js (App Router) + TypeScript
 - Tailwind CSS
-- Spotify Web API (client_credentials flow)
+- Deezer API (public, no auth) — tracks harvested into static pools at build time (see ADR-002)
 - Deployed on Vercel
 
 ## Architecture (high level)
 Three screens: Home → Generating (`loading.tsx`) → Tribe Result.
-All Spotify calls happen server-side. The browser receives fully-rendered HTML.
+Tracks are harvested from Deezer **at build time** into static pools; request-time
+rendering reads those pools — no external API calls in the request path. The browser
+receives fully-rendered HTML.
 
 Core modules (under `src/`):
-- `activity-registry` — static catalog of preset activities + rule inputs
+- `activity-registry` — static catalog of preset activities + Deezer source refs + authored attributes
 - `profile-compiler` — pure: `(activity, seed) → ActivityProfile`
-- `spotify-client` — I/O boundary; only place that holds the secret
+- `track-source` — I/O boundary; the only code that talks to Deezer (build-time harvest + request-time pool load)
 - `tribe-composer` — pure: `(profile, tracks, seed) → Tribe`
 - `app/` — Next.js routes (`/`, `/tribe/[activityId]`)
 
 ## Key invariants
 - **Determinism**: same `(activityId, seed)` → same tribe, byte-for-byte. The URL is the entire state.
-- **No DB, no accounts, no client-side Spotify calls.** `client_secret` lives only in `.env.local` and the server route.
-- **No Spotify-specific types leak past `spotify-client`.** Composer takes a normalized `NormalizedTrack[]`.
+- **No DB, no accounts, no client-side track fetching.** Deezer is read at build time only (public API, no secret); the request path touches no external service.
+- **No Deezer-specific types leak past `track-source`.** Composer takes a normalized `NormalizedTrack[]`.
 - **Accessibility is a hard requirement, not a polish task.** WCAG 2.1 AA target. Semantic HTML first, ARIA second.
 - **No randomness outside the `seed`.** Never `Math.random()` or `Date.now()` inside `profile-compiler` / `tribe-composer`.
 
@@ -45,24 +47,27 @@ Core modules (under `src/`):
 All commits follow [Conventional Commits](https://www.conventionalcommits.org/) — format: `<type>(<scope>)?: <subject>`.
 
 - **Types**: `feat`, `fix`, `docs`, `chore`, `refactor`, `test`, `style`, `perf`, `build`, `ci`
-- **Scope** (optional): module name, e.g. `spotify-client`, `profile-compiler`, `tribe-composer`, `activity-registry`, `roadmap`
+- **Scope** (optional): module name, e.g. `track-source`, `profile-compiler`, `tribe-composer`, `activity-registry`, `roadmap`
 - **Subject**: imperative, lowercase, no trailing period, ≤72 chars
 - **Body** (optional): explain *why*, not *what*. Wrap at 100 chars.
-- **Breaking changes**: `!` after type/scope (`feat(spotify-client)!: …`) or `BREAKING CHANGE:` footer
+- **Breaking changes**: `!` after type/scope (`feat(track-source)!: …`) or `BREAKING CHANGE:` footer
 
 Examples:
 - `feat(activity-registry): add skate and gym entries`
-- `fix(spotify-client): handle 429 with exponential backoff`
+- `fix(track-source): handle 429 from deezer during harvest`
 - `docs(roadmap): expand sprint 1 to 6 activities`
 - `chore: add eslint jsx-a11y rules at error level`
 
 ## Environment
-`.env.local` (gitignored) holds `SPOTIFY_CLIENT_ID` and `SPOTIFY_CLIENT_SECRET`. Never log. Never expose to the client bundle.
+Deezer's public API needs **no credentials**, so the app requires no secret to run.
+If a future provider needs keys, they go in `.env.local` (gitignored) — never logged,
+never exposed to the client bundle. (A pre-spike `.env.local` with Spotify creds may
+linger locally; it is unused.)
 
 ## Out of scope (MVP)
-User accounts, multi-source, free-text activities, full Spotify Web Playback (requires Premium login), LLM-generated content, social features, i18n. See plan file for rationale.
+User accounts, multi-source, free-text activities, full-track streaming (needs a provider playback SDK + user login), LLM-generated content, social features, i18n. See plan file for rationale.
 
-**In scope**: 30s preview playback via the `preview_url` field on Spotify tracks (public MP3, no login). `null` when Spotify doesn't provide a preview for that track — handled as a disabled state.
+**In scope**: 30s preview playback via the `preview` field on Deezer tracks (public MP3, no login). Deezer populates this reliably (spike: 100% coverage), unlike Spotify. A `null` preview still degrades to a disabled state defensively.
 
 ## Reference
 - Current sprint tasks + progress: `./ROADMAP.md` (check first to know what's done and what's next)

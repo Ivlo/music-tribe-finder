@@ -13,16 +13,30 @@ project conventions, see `CLAUDE.md`.
 
 The system turns a preset activity (e.g. "Snowboard", "Coding") into a
 curated music **tribe**: an identity (name, description, mood), structured
-attributes (energy, tempo, valence), and 10–20 Spotify tracks. The tribe
-is rendered server-side and served as a complete HTML page; the URL
-(`/tribe/[activityId]?seed=...`) is the entire state, so the same URL
-always produces the same tribe.
+attributes (energy, tempo, valence), and 10–20 Deezer tracks. Tracks are
+harvested from Deezer **at build time** into static per-activity pools
+(committed to the repo); request-time rendering reads those pools, so the
+request path makes no external API calls. The tribe is rendered server-side
+and served as a complete HTML page; the URL (`/tribe/[activityId]?seed=...`)
+is the entire state, so the same URL always produces the same tribe.
+
+> **Source = Deezer, not Spotify.** New Spotify client_credentials apps can't
+> reach `/recommendations` or `/audio-features` and return `null` previews. See
+> `DECISIONS.md` ADR-001 (static pools, authored attributes) and ADR-002 (Deezer).
 
 ---
 
 ## Architecture diagram
 
 ```
+  BUILD TIME (offline, deliberate)
+┌──────────────────────────────────────────────────────────────────┐
+│  deezer-harvest (script) ──▶ Deezer API ──▶ src/data/pools/*.json │
+│  reads activity-registry source refs (playlist / chart ids)       │
+└──────────────────────────────────────────────────────────────────┘
+        committed JSON pools ─┐
+                              ▼  (read at request time, no network)
+  REQUEST TIME
 ┌──────────────────────────────────────────────────────────────────┐
 │ Browser (Next.js client components)                              │
 │  ┌────────────┐    ┌──────────────┐     ┌──────────────────┐     │
@@ -40,11 +54,11 @@ always produces the same tribe.
 │    │                                                             │
 │    ▼                                                             │
 │  ┌─────────────────┐   ┌──────────────────┐   ┌─────────────┐    │
-│  │ activity-       │──▶│ profile-compiler │──▶│ spotify-    │    │
-│  │ registry (data) │   │ (pure fn)        │   │ client (I/O)│    │
+│  │ activity-       │──▶│ profile-compiler │──▶│ track-source│    │
+│  │ registry (data) │   │ (pure fn)        │   │ (pool load) │    │
 │  └─────────────────┘   └──────────────────┘   └──────┬──────┘    │
-│                                                      │           │
-│                                                      ▼           │
+│                                                      │ reads      │
+│                                                      ▼ pool JSON  │
 │                                          ┌──────────────────┐    │
 │                                          │ tribe-composer   │    │
 │                                          │ (pure fn)        │    │
@@ -52,29 +66,30 @@ always produces the same tribe.
 │                                                      │           │
 │                                                      ▼ Tribe     │
 └──────────────────────────────────────────────────────────────────┘
-                                       │ outbound (server-side only)
-                                       ▼
-                                  Spotify Web API
+       No outbound network in the request path.
 ```
 
 ---
 
 ## Modules
 
-Strict separation: only `spotify-client` performs I/O. Everything else is
-pure functions over data.
+Strict separation: only `track-source` (and its build-time harvester) touches
+Deezer. Everything in the request path is pure functions over data.
 
 | Module | Type | Inputs → Outputs | Responsibility |
 |---|---|---|---|
-| `activity-registry` | Static data | `activityId → ActivityEntry` | Catalog of preset activities with rule inputs (seed genres, target audio features, name-pool key, description fragments). |
-| `profile-compiler` | Pure | `(ActivityEntry, seed) → ActivityProfile` | Normalizes the activity rules into a resolved query, applies seed-driven jitter within bounds. |
-| `spotify-client` | I/O | `ActivityProfile → NormalizedTrack[]` | The **only** module that touches the network or holds the `client_secret`. Handles token caching, retries, and normalization of Spotify response shapes. |
-| `tribe-composer` | Pure | `(ActivityProfile, NormalizedTrack[], seed) → Tribe` | Generates identity (name from pool, description from template), filters/orders tracks, computes the final attribute summary. The **only** module that knows what a `Tribe` is. |
+| `activity-registry` | Static data | `activityId → ActivityEntry` | Catalog of preset activities with rule inputs: Deezer **source refs** (playlist / genre-chart ids), **authored attributes** (energy/tempo/valence/…), name-pool key, description fragments. |
+| `deezer-harvest` | Build-time tool | `ActivityEntry[] → src/data/pools/*.json` | The **only** code that calls Deezer. Fetches each activity's source refs (paginated), normalizes, dedupes, and writes committed JSON pools. Run deliberately; bumps `generationVersion`. Not in the request path. |
+| `profile-compiler` | Pure | `(ActivityEntry, seed) → ActivityProfile` | Resolves the activity rules into authored attributes + a pool ref, applies seed-driven jitter within bounds. |
+| `track-source` | I/O (local read) | `ActivityProfile → NormalizedTrack[]` | Loads the activity's committed pool JSON. The request-time boundary; reads files, never the network. (Build-time fetching lives in `deezer-harvest`.) |
+| `tribe-composer` | Pure | `(ActivityProfile, NormalizedTrack[], seed) → Tribe` | Generates identity (name from pool, description from template), filters/orders/samples tracks by seed, computes the final attribute summary. The **only** module that knows what a `Tribe` is. |
 | `web-ui` | Presentation | `Tribe → HTML` | Three screens (Home, Generating, Tribe). Renders semantic HTML with Tailwind classes. |
 
-**Why no source-adapter interface**: there is only one source. Wrapping
-Spotify in a generic `MusicSource` interface for a single implementation is
-abstraction without benefit.
+**Why no source-adapter interface**: there is one source at a time. The
+`NormalizedTrack` contract is the seam — it's what let us swap Spotify → Deezer
+(ADR-002) without touching the compiler or composer. A generic multi-source
+`MusicSource` interface for a single live implementation would be abstraction
+without benefit; the normalized contract already gives the decoupling.
 
 **Why no tribe-repository**: there is no database. Tribes are reproduced
 from URL inputs.
@@ -83,27 +98,29 @@ from URL inputs.
 
 ## Data contracts
 
-All shared types live in `src/lib/types.ts`. No Spotify-specific types
-leak past `spotify-client` — the composer takes `NormalizedTrack[]`, not
-Spotify's raw response.
+All shared types live in `src/lib/types.ts`. No Deezer-specific types
+leak past `track-source` — the composer takes `NormalizedTrack[]`, not
+Deezer's raw response.
 
 ### ActivityProfile
 
-Produced by `profile-compiler`. Source-agnostic query shape.
+Produced by `profile-compiler`. Source-agnostic shape. Attributes are
+**authored** in the registry (Deezer exposes no audio features — see ADR-001),
+not measured per track; the compiler applies seed jitter within bounds.
 
 ```
 ActivityProfile {
   activityId        string
   seed              string
-  targetAudio {
-    energy          { min, max, target: number }   // 0–1
+  attributes {                                     // authored, seed-jittered
+    energy          { min, max, target: number }   // 0–100
     tempo           { min, max, target: number }   // BPM
-    valence         { min, max, target: number }   // 0–1
-    danceability    { min, max, target: number }   // 0–1
-    acousticness    { min, max, target: number }   // 0–1
+    valence         { min, max, target: number }   // 0–100
+    danceability    { min, max, target: number }   // 0–100
+    acousticness    { min, max, target: number }   // 0–100
   }
-  seedGenres        string[]                       // Spotify genre seeds
-  trackLimit        number                         // target count
+  poolRef           string                         // → src/data/pools/<poolRef>.json
+  trackLimit        number                         // target count (10–20)
   moodPrimary       string                         // enum
   namePoolKey       string                         // → composer name pool
 }
@@ -111,25 +128,20 @@ ActivityProfile {
 
 ### NormalizedTrack
 
-Output of `spotify-client`. The contract between I/O and the composer.
+Output of `track-source` (and the row shape stored in pool JSON). The contract
+between the source boundary and the composer. No per-track audio features —
+Deezer doesn't provide them, and tribe attributes are authored (ADR-001).
 
 ```
 NormalizedTrack {
-  id                string
+  id                string         // Deezer track id
   title             string
   artists           string[]
   album             string
-  imageUrl?         string
+  imageUrl?         string         // album cover
   durationMs        number
-  previewUrl?       string         // 30s preview, often null
-  externalUrl       string         // open.spotify.com/track/...
-  audio {
-    energy          number         // 0–1
-    tempo           number         // BPM
-    valence         number         // 0–1
-    danceability    number         // 0–1
-    acousticness    number         // 0–1
-  }
+  previewUrl?       string         // 30s MP3 (Deezer; reliably present)
+  externalUrl       string         // www.deezer.com/track/...
 }
 ```
 
@@ -170,14 +182,14 @@ Tribe {
 }
 
 TribeItem {
-  spotifyId           string
+  trackId             string         // Deezer track id
   title               string
   artist              string         // joined from artists[]
   album?              string
   imageUrl?           string
   durationMs          number
   previewUrl?         string
-  externalUrl         string
+  externalUrl         string         // www.deezer.com/track/...
 }
 ```
 
@@ -197,17 +209,18 @@ End-to-end. Server-rendered. No client-side API calls.
 4. **Server Component** at `/tribe/[activityId]` reads `activityId` from
    route params and `seed` from search params.
 5. Server looks up `activity-registry[activityId]`. Unknown → 404.
-6. `profile-compiler` produces `ActivityProfile` from `(entry, seed)`.
-7. `spotify-client` queries Spotify and returns `NormalizedTrack[]`.
-   Token cached in module memory (~1h). If results are sparse, the
-   compiler is asked to relax one constraint and the query retries up to
-   N times.
+6. `profile-compiler` produces `ActivityProfile` from `(entry, seed)` —
+   authored attributes with seed jitter, plus the `poolRef`.
+7. `track-source` loads the activity's committed pool
+   (`src/data/pools/<poolRef>.json`) and returns `NormalizedTrack[]`.
+   Local read, no network. (The pool was produced earlier by `deezer-harvest`
+   at build time.)
 8. `tribe-composer` produces the `Tribe` object from
-   `(profile, tracks, seed)`.
+   `(profile, tracks, seed)` — deterministically samples/orders the pool by seed.
 9. Server Component renders the Tribe screen with the tribe as props.
    Browser receives finished HTML; Generating screen is replaced.
 10. Vercel edge can cache the response by URL — same URL on later visits
-    returns instantly without re-querying Spotify.
+    returns instantly. (No external API to re-query either way.)
 
 ---
 
@@ -218,8 +231,8 @@ End-to-end. Server-rendered. No client-side API calls.
 | `/` | GET | Home page. Lists activities. |
 | `/tribe/[activityId]` | GET | Tribe page. `?seed=` query param. Server-renders. Has `loading.tsx` sibling for the Generating screen. |
 
-No public JSON API. The `spotify-client` token helper is an internal
-module, not an HTTP route.
+No public JSON API. `track-source` reads committed pool files; there is no
+runtime token helper or outbound request in the request path.
 
 ---
 
@@ -236,11 +249,11 @@ timestamps).
   `Math.random()`, no `Date.now()`, no I/O.
 - All randomness flows through the `seed` parameter (used to seed a
   deterministic PRNG inside the composer).
-- `spotify-client` is **not** deterministic by nature (Spotify can drift).
-  Mitigation: the composer captures track IDs into the `Tribe`, so once a
-  tribe exists in a response/edge cache, the rendered output is stable.
-  When the cache expires, Spotify may return a different set; this is an
-  accepted trade-off.
+- The track source is **static committed JSON** (harvested at build time), so
+  it is fully deterministic at request time — there is no live catalog to drift.
+  This is a key win of the static-pool strategy (ADR-001): the whole request
+  path, source included, is reproducible byte-for-byte. The pool only changes
+  when `deezer-harvest` is re-run deliberately, which bumps `generationVersion`.
 
 **Verification**: a golden-file test snapshots a tribe for
 `(activity=snowboard, seed=abc, tracks=fixture)` and asserts byte-for-byte
@@ -279,9 +292,10 @@ serious/critical violations per screen.
 |---|---|---|
 | `activity-registry` | Schema integrity, unique IDs, valid enums | Structural test |
 | `profile-compiler` | Determinism + variation across seeds | Pure unit tests |
-| `spotify-client` | Token caching, response normalization, sparse-result fallback | Mock `fetch`; one gated integration test |
-| `tribe-composer` | Determinism, name pool selection, ordering rule | Pure unit tests with fixture tracks |
-| Page routes | Home → Generate → Generating → Tribe navigation; tribe HTML contains identity + 10–20 items | Playwright smoke with mocked `spotify-client` |
+| `track-source` | Pool JSON loads + parses; schema matches `NormalizedTrack` | Unit test against a fixture pool |
+| `deezer-harvest` | Normalization + dedupe of Deezer responses | Mock `fetch`; one gated integration test against real Deezer |
+| `tribe-composer` | Determinism, name pool selection, ordering/sampling rule | Pure unit tests with fixture tracks |
+| Page routes | Home → Generate → Generating → Tribe navigation; tribe HTML contains identity + 10–20 items | Playwright smoke with a fixture pool |
 | `loading.tsx` | Renders three messages on timer; safe to unmount mid-animation | Component unit with fake timers |
 | Accessibility | Zero serious/critical violations on each screen | `@axe-core/playwright` in smoke test |
 | Determinism | Golden tribe snapshot | Byte-for-byte assertion in CI |
@@ -297,9 +311,10 @@ Claude Code Stop hook runs lint + typecheck only.
 
 | Risk | Mitigation |
 |---|---|
-| Spotify restricted `/recommendations`, `/audio-features`, and `preview_url` for new/dev apps (Nov 2024) — the `/search` + `/audio-features` fallback may *also* be unavailable | Blocking spike in Sprint 0 verifies what a new client ID can actually access. Contingency if blocked: curated track pools per activity and/or precomputed audio features from a static dataset (no live feature calls); `preview_url` already degrades to a disabled state. |
-| Spotify ToS on caching metadata | No persistence in MVP. Edge cache TTL ≤ 24h. |
-| Sparse Spotify results for niche profiles | Constraint-relaxation loop in `profile-compiler`. Bounded retry count. |
+| ~~Spotify restricted endpoints / null previews~~ | **Resolved**: Sprint 0 spike confirmed the restriction; switched source to Deezer (ADR-002). Kept here as a pointer to `DECISIONS.md`. |
+| Deezer API ToS — previews/metadata intended for promotional use; commercial use needs approval | Acceptable gray zone for a non-commercial MVP/portfolio demo. Flagged in ADR-002. Revisit before any commercial launch. |
+| Pool staleness — committed pools drift from Deezer's live catalog over time | Accepted by design (static pools buy determinism). Re-run `deezer-harvest` deliberately; bump `generationVersion`. |
+| A harvested playlist/chart gets emptied or removed at Deezer | Pools are committed JSON, so existing builds are unaffected. Harvest validates a minimum track count per activity and fails loudly. |
 | Determinism breaks (e.g. `Math.random()` slips into pure module) | Golden-file test in CI. Lint rule: no `Math.random()` / `Date.now()` in `src/lib/`. |
 | `generationVersion` drift across deploys changing shared-link output | Accepted trade-off; documented in footer copy. |
 | Accessibility regressions late in development | axe-core in CI from Sprint 1. Manual VoiceOver pass at end of Sprints 2 and 3. |

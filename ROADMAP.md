@@ -36,23 +36,16 @@ Full architecture detail: `~/.claude/plans/you-are-a-senior-glimmering-pinwheel.
 
 ## Sprint 0 — Foundations (~1 day)
 
-> **Blocking spike — do this FIRST.** In Nov 2024 Spotify restricted several Web
-> API endpoints for new / dev-mode apps: `/recommendations`, `/audio-features`,
-> and `preview_url` is often `null`. The fallback the plan assumed (`/search` +
-> `/audio-features`) may *also* be unavailable. Empirically verify what a NEW
-> client ID can access **before** designing the pipeline — the result decides the
-> compiler/composer architecture.
+> **Blocking spike — DONE (2026-05-29).** Verified empirically that new Spotify
+> client_credentials apps can't reach `/recommendations` (404) or `/audio-features`
+> (403), and `preview_url` is always `null`. Spiked no-auth alternatives; Deezer won
+> a head-to-head vs iTunes. Outcome: **static curated pools + Deezer source + authored
+> attributes**. Full rationale in `DECISIONS.md` (ADR-001, ADR-002).
 
-- [ ] Create Spotify developer app at https://developer.spotify.com/dashboard
-- [ ] Add `SPOTIFY_CLIENT_ID` + `SPOTIFY_CLIENT_SECRET` to `.env.local` (gitignored)
-- [ ] **Spike**: with the new client ID, test (curl/script) which endpoints actually
-      work — `/v1/recommendations`, `/v1/audio-features` — and whether `preview_url`
-      comes back populated
-- [ ] **Decide the data strategy from the spike result**:
-  - works → original plan (live audio-feature targeting via recommendations/search)
-  - blocked → contingency: curated track pools per activity and/or precomputed audio
-    features from a static dataset (no live feature calls); `preview_url` already
-    degrades to a disabled state
+- [x] **Spike**: verify which endpoints a new client ID can reach (`scripts/spotify-spike.sh`)
+- [x] **Spike**: head-to-head of no-auth alternatives — iTunes vs Deezer (`scripts/altmusic-headtohead.sh`)
+- [x] **Decide the data strategy from the spike result** → ADR-001 + ADR-002 (Deezer, static pools)
+- [x] ~~Create Spotify developer app + add creds~~ (done, now unused — Deezer needs no auth)
 - [ ] Run `npx create-next-app@latest` → App Router, TypeScript, ESLint, Tailwind enabled, `src/` directory yes
 - [ ] Verify `eslint-plugin-jsx-a11y` rules are at error level in ESLint config
 - [ ] Set up Prettier (+ `eslint-config-prettier` so ESLint and Prettier don't fight)
@@ -88,17 +81,18 @@ Toolchain (Prettier, Vitest, ESLint) must exist first — these hooks call those
   - Coding (mid energy, mid tempo, instrumental/electronic)
   - Night Focus (low-mid energy, low tempo, ambient/lo-fi)
   - Chill (low energy, slow tempo, acoustic/indie)
-  - [ ] Each entry: `id`, `label`, `icon`, seed genres, target audio features, name-pool key
+  - [ ] Each entry: `id`, `label`, `icon`, Deezer source refs (playlist / genre-chart ids), authored attributes (energy/tempo/valence/…), name-pool key
 
 ### Pure modules
 - [ ] Implement `profile-compiler`: `(activity, seed) → ActivityProfile`, deterministic
 - [ ] Implement `tribe-composer`: `(profile, tracks, seed) → Tribe`, deterministic
 - [ ] Unit tests: same inputs → same output; different seeds → different but in-bounds outputs
 
-### I/O module
-- [ ] Implement `spotify-client`: token cache (~1h), call `/recommendations` or fallback, normalize to `NormalizedTrack[]`
-- [ ] Mock fetch unit tests for normalization + token caching
-- [ ] One optional gated integration test against real Spotify
+### Track source (build-time harvest + request-time load)
+- [ ] Implement `deezer-harvest` script: fetch each activity's source refs (playlists / genre charts), paginate (`limit≤... `), normalize + dedupe, write `src/data/pools/<poolRef>.json`
+- [ ] Implement `track-source`: load committed pool JSON → `NormalizedTrack[]` (local read, no network)
+- [ ] Mock-fetch unit tests for harvest normalization/dedupe; fixture-pool test for the loader
+- [ ] One optional gated integration test against real Deezer
 
 ### React components (1:1 from `.pen` — see `DESIGN.md` §Reusable components)
 - [ ] Create the `component-builder` agent (preloads `react-patterns` + `pen-to-component` + `a11y`) — built after the Sprint 0 scaffold exists, used to build the components below in parallel

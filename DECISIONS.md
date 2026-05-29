@@ -32,6 +32,8 @@ activities (chill/focus), genre charts for genre-driven ones (electronic/dance).
 playlists yield coherent *mood* pools that keyword search cannot; Deezer beat iTunes
 head-to-head precisely on mood coverage (iTunes has no mood mechanism). No secret to
 protect (public reads).
-**Consequences:** Rename `spotify-client` → `deezer-client`; the `NormalizedTrack`
-boundary is unchanged, so `profile-compiler` / `tribe-composer` are untouched.
+**Consequences:** Replace `spotify-client` with `track-source` (request-time pool
+loader) + `deezer-harvest` (build-time fetcher — the only code that calls Deezer);
+the `NormalizedTrack` boundary is unchanged, so `profile-compiler` / `tribe-composer`
+are untouched.
 Deezer API ToS is a gray zone for non-commercial demos — acceptable for an MVP, flagged.
