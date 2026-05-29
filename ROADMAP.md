@@ -46,7 +46,7 @@ Full architecture detail: `~/.claude/plans/you-are-a-senior-glimmering-pinwheel.
 - [x] **Spike**: head-to-head of no-auth alternatives — iTunes vs Deezer (`scripts/altmusic-headtohead.sh`)
 - [x] **Decide the data strategy from the spike result** → ADR-001 + ADR-002 (Deezer, static pools)
 - [x] ~~Create Spotify developer app + add creds~~ (done, now unused — Deezer needs no auth)
-- [ ] Run `npx create-next-app@latest` → App Router, TypeScript, ESLint, Tailwind enabled, `src/` directory yes
+- [x] Scaffold with `create-next-app@16.2.6` → App Router, TS, ESLint, Tailwind v4, `src/`, `@/*` alias, pnpm
 - [ ] Verify `eslint-plugin-jsx-a11y` rules are at error level in ESLint config
 - [ ] Set up Prettier (+ `eslint-config-prettier` so ESLint and Prettier don't fight)
 - [ ] Set up Vitest + React Testing Library + `@testing-library/jest-dom` + `vitest-axe`
