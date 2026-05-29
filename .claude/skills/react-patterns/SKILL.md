@@ -11,9 +11,10 @@ allowed-tools: Read, Glob, Grep, Bash
 
 ## Architecture context
 Next.js App Router + TypeScript + Tailwind. Pure logic in `src/lib/`,
-reusable UI in `src/components/<Name>/`, routes in `src/app/`. All Spotify
-I/O is server-side — the browser never fetches data. See `CLAUDE.md`,
-`ARCHITECTURE.md`, `DESIGN.md`.
+reusable UI in `src/components/<Name>/`, routes in `src/app/`. Tracks come
+from committed static pools (harvested from Deezer at build time) — the
+request path makes no external API calls and the browser never fetches data.
+See `CLAUDE.md`, `ARCHITECTURE.md`, `DESIGN.md`.
 
 ## Patterns to follow
 

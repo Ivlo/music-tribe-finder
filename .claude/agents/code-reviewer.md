@@ -20,10 +20,11 @@ model: sonnet
   Same `(activityId, seed)` must yield the same tribe.
 - Pure modules: `profile-compiler` / `tribe-composer` have no `async`, no I/O,
   no side effects.
-- Boundary: no Spotify-specific types leak past `spotify-client` (the composer
-  takes `NormalizedTrack[]`).
-- Secrets: `client_secret` only in the server route / env; never logged, never
-  in the client bundle. No client-side Spotify calls.
+- Boundary: no Deezer-specific types leak past `track-source` (the composer
+  takes `NormalizedTrack[]`). Only `deezer-harvest` (build-time) calls Deezer.
+- No external API calls in the request path — `track-source` reads committed pool
+  JSON, never the network. No client-side track fetching. Any secret (none needed
+  for Deezer) stays out of the client bundle and logs.
 - The URL (`/tribe/[activityId]?seed=`) is the only state.
 
 ### 2. Next.js App Router
@@ -32,8 +33,9 @@ model: sonnet
 - Loading/error via `loading.tsx` / `error.tsx` / `not-found.tsx`, not wrappers.
 
 ### 3. Correctness
-- Edge cases: sparse/empty Spotify results (constraint relaxation), `preview_url`
-  null handled, async awaited in `spotify-client`. Error paths, not just happy.
+- Edge cases: sparse/empty pool handled, `previewUrl` null handled defensively
+  (rare with Deezer but possible), async awaited in `deezer-harvest`. Error paths,
+  not just happy.
 
 ### 4. TypeScript
 - No `any`. Return types on exported `lib` functions. Discriminated unions for
