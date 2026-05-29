@@ -15,7 +15,7 @@ Full architecture detail: `~/.claude/plans/you-are-a-senior-glimmering-pinwheel.
 - [ ] Sprint 2 — Catalog + identity quality
 - [ ] Sprint 3 — Production polish
 
-**Currently working on**: _Sprint 0 — Foundations (not started)_
+**Currently working on**: _Sprint 0 — Foundations (in progress: spike + Deezer decision + Next.js scaffold done; **next: toolchain** — jsx-a11y, Prettier, Vitest/RTL, Playwright, then hooks)_
 
 ---
 
