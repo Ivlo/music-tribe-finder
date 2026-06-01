@@ -10,12 +10,12 @@ Full architecture detail: `~/.claude/plans/you-are-a-senior-glimmering-pinwheel.
 - [x] `ROADMAP.md` created
 - [x] `ARCHITECTURE.md` created
 - [x] Sprint 0.5 — Design (Pencil `.pen`, tokens, 3 screens × 2 breakpoints, 8 reusable components, `DESIGN.md` rationale)
-- [ ] Sprint 0 — Foundations
+- [x] Sprint 0 — Foundations (toolchain complete; Vercel relocated to Sprint 1 § Deploy)
 - [ ] Sprint 1 — Vertical slice
 - [ ] Sprint 2 — Catalog + identity quality
 - [ ] Sprint 3 — Production polish
 
-**Currently working on**: _Sprint 0 — Foundations (toolchain COMPLETE: jsx-a11y + Prettier + Vitest/RTL + CI + Playwright all done & green; **next: dev tooling & hooks** — PostToolUse/Stop Claude hooks + pre-commit gate; Vercel deferred to ~Sprint 1)_
+**Currently working on**: _Sprint 0 DONE (toolchain complete & green in CI; Vercel relocated to Sprint 1 § Deploy). **Next: dev tooling & hooks** — PostToolUse/Stop Claude hooks + pre-commit gate — then Sprint 1._
 
 ---
 
@@ -50,7 +50,7 @@ Full architecture detail: `~/.claude/plans/you-are-a-senior-glimmering-pinwheel.
 - [x] Verify `eslint-plugin-jsx-a11y` rules are at error level in ESLint config (added plugin as direct dep; re-applied `flatConfigs.strict` rules at error — 31 rules now fail lint, not warn)
 - [x] Set up Prettier (+ `eslint-config-prettier` so ESLint and Prettier don't fight) — explicit-defaults `.prettierrc.json`, `.prettierignore`, `format`/`format:check` scripts, prettier config last in ESLint; repo reformatted
 - [x] Set up Vitest + React Testing Library + `@testing-library/jest-dom` + `vitest-axe` — jsdom env, `@/` alias, setup file (jest-dom + axe matchers + RTL cleanup), `vitest-axe.d.ts` type shim for Vitest 4, `.d.ts` ESLint override, `test`/`test:watch`/`typecheck` scripts; all 4 gates green
-- [ ] Link project to Vercel (deferred — interactive login; do when there's something to deploy, ~Sprint 1)
+- [x] ~~Link project to Vercel~~ → **moved to Sprint 1 § Deploy** (needs interactive login + something real to deploy; no value before the vertical slice exists)
 - [x] Set up CI workflow: `.github/workflows/ci.yml` — lint + typecheck + test + format:check on push/PR to main; Node from `.nvmrc`, pnpm pinned via `packageManager`, `--frozen-lockfile`
 - [x] Set up Playwright + `@axe-core/playwright` (config only; tests in Sprint 1) — `playwright.config.ts` (Chromium, `build`+`start` webServer), tests isolated in `e2e/` (Vitest excludes it), `e2e` script w/ `--pass-with-no-tests` until Sprint 1
 
@@ -130,6 +130,15 @@ Toolchain (Prettier, Vitest, ESLint) must exist first — these hooks call those
 
 - [ ] Playwright smoke test: Home → click tile → click Generate → see Generating → see Tribe with real tracks
 - [ ] `@axe-core/playwright` check: zero serious/critical violations on Home, Generating, Tribe
+
+### Deploy
+
+> Moved from Sprint 0: deferred because it needs an interactive Vercel login and a real
+> build to deploy. Do it once the vertical slice renders end-to-end.
+
+- [ ] Link project to Vercel (`vercel link` — **interactive login, run by Ivlo**, not Claude)
+- [ ] Verify the production build deploys and the 3 screens work on the deployed URL
+- [ ] Confirm the build-time Deezer harvest runs in Vercel's build step (pools committed; no request-time API calls)
 
 **Demoable**: pick one of 6 activities, see Generating animation, arrive at a real tribe. Fully keyboard-operable.
 
