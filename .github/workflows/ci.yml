@@ -15,16 +15,16 @@ jobs:
     steps:
       # 1. Clone the repo into the machine.
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       # 2. Install pnpm (version read from the "packageManager" field in package.json).
       - name: Install pnpm
-        uses: pnpm/action-setup@v4
+        uses: pnpm/action-setup@v6
 
       # 3. Install Node — version pinned by .nvmrc, same as local — and enable the
       #    pnpm store cache so future runs install faster.
       - name: Install Node
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v6
         with:
           node-version-file: .nvmrc
           cache: pnpm
