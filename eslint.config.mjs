@@ -24,6 +24,18 @@ const eslintConfig = defineConfig([
     "build/**",
     "next-env.d.ts",
   ]),
+  // Declaration files (.d.ts) follow different idioms than source: module
+  // augmentations are empty interfaces that `extends` an upstream type and must
+  // mirror its generic signature (often `any`), even when a type param is unused.
+  // These are correct here, so relax the source-oriented rules for *.d.ts only.
+  {
+    files: ["**/*.d.ts"],
+    rules: {
+      "@typescript-eslint/no-empty-object-type": "off",
+      "@typescript-eslint/no-explicit-any": "off",
+      "@typescript-eslint/no-unused-vars": "off",
+    },
+  },
   // MUST be last: turns off every ESLint formatting rule that would conflict with
   // Prettier, so ESLint owns code quality and Prettier owns formatting (no fights).
   prettier,
