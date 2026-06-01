@@ -1,0 +1,11 @@
+# Build output / generated
+.next/
+out/
+build/
+next-env.d.ts
+
+# Package manager artifacts (managed by pnpm, not hand-formatted)
+pnpm-lock.yaml
+
+# Misc
+*.pen

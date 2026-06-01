@@ -10,6 +10,7 @@ allowed-tools: Read, Glob, Grep, Bash, mcp__pencil__open_document, mcp__pencil__
 ---
 
 ## Purpose
+
 Generate a React component from its design in `design/design.pen`, following
 the conventions in the **react-patterns** skill (Server/Client split, a11y,
 Tailwind-only, determinism). Don't restate those rules here — read them.
@@ -17,6 +18,7 @@ Tailwind-only, determinism). Don't restate those rules here — read them.
 Target component: **$ARGUMENTS**
 
 ## Before you start
+
 - Read `DESIGN.md` (§Reusable components) for the design→code mapping: which
   `.pen` node corresponds to this component, the token names, and the states
   it must support.
@@ -24,6 +26,7 @@ Target component: **$ARGUMENTS**
   never Read/Grep.
 
 ## Steps
+
 1. **Read the design node**
    - `mcp__pencil__open_document` on `design/design.pen` (if not already open).
    - Find the node matching $ARGUMENTS (use DESIGN.md's component map).
@@ -51,6 +54,7 @@ Target component: **$ARGUMENTS**
    design detail you couldn't confidently map (so the user can confirm).
 
 ## Conventions
+
 - Component name = folder name = file name (PascalCase).
 - Tailwind utility classes only; no inline styles except dynamic values.
 - Don't over-abstract: no barrel/`index.ts` unless asked, no compound pattern

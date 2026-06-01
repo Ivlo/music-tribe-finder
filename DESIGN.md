@@ -1,7 +1,7 @@
 # Design
 
 Design system, visual rules, and decisions for Music Tribe Finder. This
-captures the *why* behind the design — the `.pen` captures the *what*.
+captures the _why_ behind the design — the `.pen` captures the _what_.
 
 For commands, conventions, and project setup: see `CLAUDE.md`.
 For module structure and a11y requirements: see `ARCHITECTURE.md`.
@@ -17,13 +17,13 @@ Visual artifacts live in **`design/music-tribe-finder.pen`** (saved as
 Reference renders are in `design/screenshots/` — regenerate with
 `mcp__pencil__export_nodes` when the `.pen` changes.
 
-| Screen | File |
-|---|---|
-| Home (Desktop) | `design/screenshots/home-desktop.png` |
-| Home (Mobile) | `design/screenshots/home-mobile.png` |
+| Screen               | File                                        |
+| -------------------- | ------------------------------------------- |
+| Home (Desktop)       | `design/screenshots/home-desktop.png`       |
+| Home (Mobile)        | `design/screenshots/home-mobile.png`        |
 | Generating (Desktop) | `design/screenshots/generating-desktop.png` |
-| Tribe (Desktop) | `design/screenshots/tribe-desktop.png` |
-| Tribe (Mobile) | `design/screenshots/tribe-mobile.png` |
+| Tribe (Desktop)      | `design/screenshots/tribe-desktop.png`      |
+| Tribe (Mobile)       | `design/screenshots/tribe-mobile.png`       |
 
 ---
 
@@ -52,11 +52,11 @@ Three accents map to activity energy families. Code applies the right
 accent based on `activityId`; the design depicts only the high-energy
 variant (Snowboard / "Frostbite Collective").
 
-| Family | Token | Color | Activities |
-|---|---|---|---|
-| High | `$accent-high` | `#FF9800` (signal orange) | Snowboard, Skate, Gym |
-| Mid | `$accent-mid` | `#3B82F6` (electric blue) | Coding |
-| Low | `$accent-low` | `#A78BFA` (dusty violet) | Night Focus, Chill |
+| Family | Token          | Color                     | Activities            |
+| ------ | -------------- | ------------------------- | --------------------- |
+| High   | `$accent-high` | `#FF9800` (signal orange) | Snowboard, Skate, Gym |
+| Mid    | `$accent-mid`  | `#3B82F6` (electric blue) | Coding                |
+| Low    | `$accent-low`  | `#A78BFA` (dusty violet)  | Night Focus, Chill    |
 
 `$accent-chill` exists as an alias of `$accent-low` (legacy from initial
 generation — safe to leave; cosmetic cleanup).
@@ -71,23 +71,24 @@ rings, the "playing" play button. Never as full background washes.
 Dark-mode-first. `$bg-primary` is the canonical page background;
 `$bg-inverse` is reserved for rare contrastive cases (currently unused).
 
-| Token | Value | Use |
-|---|---|---|
-| `$bg-primary` | `#0A0A0A` | Page background |
-| `$bg-surface` | `#1F1F1F` | Tiles, buttons (secondary), chips |
-| `$bg-surface-hover` | `#2A2A2A` | Hover, album art placeholder |
-| `$bg-surface-selected` | `#353535` | Selected tile fill |
-| `$bg-elevated` | `#161616` | Modal/popover (unused in MVP) |
-| `$text-primary` | `#F5F5F5` | Body text, headings |
-| `$text-secondary` | `#B3B3B3` | Tagline, descriptions, artist names |
-| `$text-tertiary` | `#808080` | Captions, meta, "no preview" tooltips |
-| `$border-default` | `#2A2A2A` | Tile borders |
-| `$border-subtle` | `#1F1F1F` | Track list dividers |
-| `$border-focus` | `#FF9800` | Focus rings (always visible) |
-| `$meter-fill` | `#FF9800` | Attribute bars (replaced per-mood in code) |
-| `$meter-track` | `#2A2A2A` | Attribute bar empty track |
+| Token                  | Value     | Use                                        |
+| ---------------------- | --------- | ------------------------------------------ |
+| `$bg-primary`          | `#0A0A0A` | Page background                            |
+| `$bg-surface`          | `#1F1F1F` | Tiles, buttons (secondary), chips          |
+| `$bg-surface-hover`    | `#2A2A2A` | Hover, album art placeholder               |
+| `$bg-surface-selected` | `#353535` | Selected tile fill                         |
+| `$bg-elevated`         | `#161616` | Modal/popover (unused in MVP)              |
+| `$text-primary`        | `#F5F5F5` | Body text, headings                        |
+| `$text-secondary`      | `#B3B3B3` | Tagline, descriptions, artist names        |
+| `$text-tertiary`       | `#808080` | Captions, meta, "no preview" tooltips      |
+| `$border-default`      | `#2A2A2A` | Tile borders                               |
+| `$border-subtle`       | `#1F1F1F` | Track list dividers                        |
+| `$border-focus`        | `#FF9800` | Focus rings (always visible)               |
+| `$meter-fill`          | `#FF9800` | Attribute bars (replaced per-mood in code) |
+| `$meter-track`         | `#2A2A2A` | Attribute bar empty track                  |
 
 **Contrast verified** (WCAG 2.1 AA):
+
 - `$text-primary` on `$bg-primary` → ~18:1 ✓
 - `$text-secondary` on `$bg-primary` → ~9:1 ✓
 - `$text-tertiary` on `$bg-primary` → ~5:1 ✓ (passes body AA)
@@ -96,14 +97,14 @@ Dark-mode-first. `$bg-primary` is the canonical page background;
 
 ## Radius scale
 
-| Token | Value | Use |
-|---|---|---|
-| `$radius-none` | 0 | Default |
-| `$radius-sm` | 4 | (unused; reserved) |
-| `$radius-md` | 8 | Activity tiles, surface chips |
-| `$radius-lg` | 16 | (reserved for larger cards) |
-| `$radius-xl` | 24 | (reserved) |
-| `$radius-full` | 9999 | Pill buttons (Generate, Regenerate), mood chips, play/icon buttons |
+| Token          | Value | Use                                                                |
+| -------------- | ----- | ------------------------------------------------------------------ |
+| `$radius-none` | 0     | Default                                                            |
+| `$radius-sm`   | 4     | (unused; reserved)                                                 |
+| `$radius-md`   | 8     | Activity tiles, surface chips                                      |
+| `$radius-lg`   | 16    | (reserved for larger cards)                                        |
+| `$radius-xl`   | 24    | (reserved)                                                         |
+| `$radius-full` | 9999  | Pill buttons (Generate, Regenerate), mood chips, play/icon buttons |
 
 Decision: subtle radius on cards (8), pill on CTAs (full). Pure-sharp
 "Swiss" felt too cold for the editorial direction we landed on.
@@ -112,16 +113,16 @@ Decision: subtle radius on cards (8), pill on CTAs (full). Pure-sharp
 
 ## Reusable components (in `.pen`)
 
-| Component | ID | Purpose |
-|---|---|---|
-| ActivityTile/Default | `wPQzJ` | Activity grid tile (radio item) |
-| ActivityTile/Selected | `Y3MM8I` | Selected state with `$accent-high` stroke |
-| PrimaryButton/Default | `Qjaeo` | Generate, Regenerate CTA (pill, `$accent-high` fill) |
-| PrimaryButton/Disabled | `f7RrRl` | Same shape, `opacity: 0.35` |
-| MoodChip | `g6903` | Tribe mood keywords (pill, `$accent-high-muted` fill) |
-| AttributeMeter | `PLwa7` | Label + bar + numeric value |
-| TrackItem | `kIrqn` | Play button + art + title/artist + Deezer link icon |
-| PhasedMessage | `bPitO` | Generating screen heading + dots |
+| Component              | ID       | Purpose                                               |
+| ---------------------- | -------- | ----------------------------------------------------- |
+| ActivityTile/Default   | `wPQzJ`  | Activity grid tile (radio item)                       |
+| ActivityTile/Selected  | `Y3MM8I` | Selected state with `$accent-high` stroke             |
+| PrimaryButton/Default  | `Qjaeo`  | Generate, Regenerate CTA (pill, `$accent-high` fill)  |
+| PrimaryButton/Disabled | `f7RrRl` | Same shape, `opacity: 0.35`                           |
+| MoodChip               | `g6903`  | Tribe mood keywords (pill, `$accent-high-muted` fill) |
+| AttributeMeter         | `PLwa7`  | Label + bar + numeric value                           |
+| TrackItem              | `kIrqn`  | Play button + art + title/artist + Deezer link icon   |
+| PhasedMessage          | `bPitO`  | Generating screen heading + dots                      |
 
 The Tribe screen's track rows are **inline frames**, not refs to
 `kIrqn`. The component is the spec; the rows are an example. When
@@ -136,11 +137,11 @@ Deezer populates `preview` reliably (spike: ~100% coverage — see
 the primary interaction. The "no preview" state is kept as a **defensive
 fallback** for the rare null, not a frequently-hit case.
 
-| State | Visual | Where shown in `.pen` |
-|---|---|---|
-| Paused (default) | Circular `$bg-surface` button, `play` icon `$text-primary` | Tracks 1, 4–12 (Desktop + Mobile) |
-| Playing | Circular `$accent-high` button (orange), `pause` icon `$text-inverse` (dark) | Track 2 (Desktop + Mobile) |
-| No preview | Same as paused, `opacity: 0.3`, `cursor: not-allowed` | Track 3 (Desktop + Mobile) |
+| State            | Visual                                                                       | Where shown in `.pen`             |
+| ---------------- | ---------------------------------------------------------------------------- | --------------------------------- |
+| Paused (default) | Circular `$bg-surface` button, `play` icon `$text-primary`                   | Tracks 1, 4–12 (Desktop + Mobile) |
+| Playing          | Circular `$accent-high` button (orange), `pause` icon `$text-inverse` (dark) | Track 2 (Desktop + Mobile)        |
+| No preview       | Same as paused, `opacity: 0.3`, `cursor: not-allowed`                        | Track 3 (Desktop + Mobile)        |
 
 The "Open in Deezer" action persists in all 3 states as a small
 `external-link` icon on the right (secondary, never the primary
@@ -171,16 +172,19 @@ in CI (Sprint 1+).
 ## Visual references (from original brief)
 
 Studied closely:
+
 - https://linear.app — restrained dark UI, typographic confidence
 - https://teenage.engineering — Swiss minimal, "neutral + one accent"
 - https://ra.co — music editorial, cool grays, condensed sans
 - https://music.apple.com — curated-playlist hierarchy
 
 Adjacent — neutral systems with strong character:
+
 - https://vercel.com, https://railway.com, https://stripe.com,
   https://www.raycast.com
 
 Curation / typography:
+
 - https://minimal.gallery, https://www.typewolf.com
 
 ---

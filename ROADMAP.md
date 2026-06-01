@@ -15,13 +15,13 @@ Full architecture detail: `~/.claude/plans/you-are-a-senior-glimmering-pinwheel.
 - [ ] Sprint 2 — Catalog + identity quality
 - [ ] Sprint 3 — Production polish
 
-**Currently working on**: _Sprint 0 — Foundations (toolchain in progress: jsx-a11y at error level done; **next: Prettier**, then Vitest/RTL, Playwright, CI, then hooks)_
+**Currently working on**: _Sprint 0 — Foundations (toolchain in progress: jsx-a11y + Prettier done; **next: Vitest/RTL**, then Vercel, CI, Playwright, then hooks)_
 
 ---
 
 ## Locked decisions
 
-> Index only. The *why* behind consequential decisions lives in `DECISIONS.md`.
+> Index only. The _why_ behind consequential decisions lives in `DECISIONS.md`.
 
 - Deezer as track source (editorial playlists + genre charts) — see ADR-002
 - Static curated pools, attributes authored, no live audio-features — see ADR-001
@@ -48,7 +48,7 @@ Full architecture detail: `~/.claude/plans/you-are-a-senior-glimmering-pinwheel.
 - [x] ~~Create Spotify developer app + add creds~~ (done, now unused — Deezer needs no auth)
 - [x] Scaffold with `create-next-app@16.2.6` → App Router, TS, ESLint, Tailwind v4, `src/`, `@/*` alias, pnpm
 - [x] Verify `eslint-plugin-jsx-a11y` rules are at error level in ESLint config (added plugin as direct dep; re-applied `flatConfigs.strict` rules at error — 31 rules now fail lint, not warn)
-- [ ] Set up Prettier (+ `eslint-config-prettier` so ESLint and Prettier don't fight)
+- [x] Set up Prettier (+ `eslint-config-prettier` so ESLint and Prettier don't fight) — explicit-defaults `.prettierrc.json`, `.prettierignore`, `format`/`format:check` scripts, prettier config last in ESLint; repo reformatted
 - [ ] Set up Vitest + React Testing Library + `@testing-library/jest-dom` + `vitest-axe`
 - [ ] Link project to Vercel
 - [ ] Set up CI workflow: `pnpm lint && pnpm typecheck && pnpm test`
@@ -61,11 +61,13 @@ Full architecture detail: `~/.claude/plans/you-are-a-senior-glimmering-pinwheel.
 Toolchain (Prettier, Vitest, ESLint) must exist first — these hooks call those commands.
 
 **Claude Code hooks** (`.claude/settings.json`):
+
 - [ ] PostToolUse: `prettier --write` on edited `.ts`/`.tsx` (auto-format, non-blocking)
 - [ ] Stop: lint + typecheck only (fast feedback; no tests)
 - [ ] Verify the exact Stop-hook JSON / exit-code schema when installing (decision/reason nesting is finicky)
 
 **Pre-commit gate** (a Git-level hook, not a Claude hook — mechanism TBD: decide at install between husky, `simple-git-hooks`, lint-staged, or raw `.git/hooks/`):
+
 - [ ] pre-commit: lint + typecheck + unit + golden determinism (fast local gate; E2E excluded)
 
 ---
@@ -73,6 +75,7 @@ Toolchain (Prettier, Vitest, ESLint) must exist first — these hooks call those
 ## Sprint 1 — Vertical slice (~3–4 days)
 
 ### Types & registry
+
 - [ ] Define TypeScript types: `ActivityProfile`, `Tribe`, `TribeItem`, `NormalizedTrack`
 - [ ] Build `activity-registry` with 6 activities covering the energy/mood spectrum:
   - Snowboard (high energy, fast tempo, electronic/trap)
@@ -84,17 +87,20 @@ Toolchain (Prettier, Vitest, ESLint) must exist first — these hooks call those
   - [ ] Each entry: `id`, `label`, `icon`, Deezer source refs (playlist / genre-chart ids), authored attributes (energy/tempo/valence/…), name-pool key
 
 ### Pure modules
+
 - [ ] Implement `profile-compiler`: `(activity, seed) → ActivityProfile`, deterministic
 - [ ] Implement `tribe-composer`: `(profile, tracks, seed) → Tribe`, deterministic
 - [ ] Unit tests: same inputs → same output; different seeds → different but in-bounds outputs
 
 ### Track source (build-time harvest + request-time load)
+
 - [ ] Implement `deezer-harvest` script: fetch each activity's source refs (playlists / genre charts), paginate (`limit≤... `), normalize + dedupe, write `src/data/pools/<poolRef>.json`
 - [ ] Implement `track-source`: load committed pool JSON → `NormalizedTrack[]` (local read, no network)
 - [ ] Mock-fetch unit tests for harvest normalization/dedupe; fixture-pool test for the loader
 - [ ] One optional gated integration test against real Deezer
 
 ### React components (1:1 from `.pen` — see `DESIGN.md` §Reusable components)
+
 - [ ] Create the `component-builder` agent (preloads `react-patterns` + `pen-to-component` + `a11y`) — built after the Sprint 0 scaffold exists, used to build the components below in parallel
 - [ ] `<ActivityTile />` — radio item; states: default / hover / focused / selected
 - [ ] `<PrimaryButton />` — pill CTA; states: default / disabled
@@ -108,6 +114,7 @@ Toolchain (Prettier, Vitest, ESLint) must exist first — these hooks call those
 - [ ] `<PhasedMessage />` — cycles 3 messages every ~600ms; respects `prefers-reduced-motion`
 
 ### Routes & UI
+
 - [ ] Home page `/`: `<fieldset>` radiogroup with 6 `<ActivityTile />` + `<PrimaryButton />` (disabled until selection)
   - [ ] Keyboard: Tab → arrow keys within tiles → Tab → Generate → Enter
   - [ ] Visible focus rings everywhere
@@ -120,6 +127,7 @@ Toolchain (Prettier, Vitest, ESLint) must exist first — these hooks call those
   - [ ] Footer with regenerate `<PrimaryButton />` (mints new seed)
 
 ### Tests
+
 - [ ] Playwright smoke test: Home → click tile → click Generate → see Generating → see Tribe with real tracks
 - [ ] `@axe-core/playwright` check: zero serious/critical violations on Home, Generating, Tribe
 

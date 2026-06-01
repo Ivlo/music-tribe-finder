@@ -10,14 +10,14 @@ Never edit a past entry; supersede it with a new one and flip its **Status**.
 
 **Status:** Accepted
 **Context:** Sprint 0 Spotify spike (`scripts/spotify-spike.sh`) against a real new
-client_credentials app: `/recommendations` → 404, `/audio-features` → 403,
+`client_credentials` app: `/recommendations` → 404, `/audio-features` → 403,
 `preview_url` → null everywhere. Live audio-feature targeting is impossible.
 **Decision:** Build static track pools harvested at build time; author mood/energy
 attributes in the activity-registry; sample deterministically by `seed`.
 **Why:** Honors the byte-for-byte determinism invariant; removes the runtime API
 dependency from the result page; attributes no longer drift with an external catalog.
 **Consequences:** Need a harvest script + committed JSON pools + a `generationVersion`
-to refresh deliberately. Attribute meters describe the *activity*, not the literal tracks.
+to refresh deliberately. Attribute meters describe the _activity_, not the literal tracks.
 
 ## ADR-002 — Deezer over Spotify as track source (2026-05-29)
 
@@ -29,7 +29,7 @@ retrieval (see ADR-001). Empirical head-to-head of no-auth alternatives
 **Decision:** Use Deezer as the track source — editorial playlists for mood-driven
 activities (chill/focus), genre charts for genre-driven ones (electronic/dance).
 **Why:** 100% preview coverage (resurrects the 30s-preview feature); editorial
-playlists yield coherent *mood* pools that keyword search cannot; Deezer beat iTunes
+playlists yield coherent _mood_ pools that keyword search cannot; Deezer beat iTunes
 head-to-head precisely on mood coverage (iTunes has no mood mechanism). No secret to
 protect (public reads).
 **Consequences:** Replace `spotify-client` with `track-source` (request-time pool

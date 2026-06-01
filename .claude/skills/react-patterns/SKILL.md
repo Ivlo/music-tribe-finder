@@ -10,6 +10,7 @@ allowed-tools: Read, Glob, Grep, Bash
 ---
 
 ## Architecture context
+
 Next.js App Router + TypeScript + Tailwind. Pure logic in `src/lib/`,
 reusable UI in `src/components/<Name>/`, routes in `src/app/`. Tracks come
 from committed static pools (harvested from Deezer at build time) — the
@@ -19,6 +20,7 @@ See `CLAUDE.md`, `ARCHITECTURE.md`, `DESIGN.md`.
 ## Patterns to follow
 
 ### Server vs Client components (the core App Router rule)
+
 - **Default to Server Components.** Add `'use client'` ONLY when the component
   needs interactivity: state, effects, event handlers, refs, or browser APIs.
 - Data is fetched/computed in async Server Components (the pipeline runs in
@@ -29,6 +31,7 @@ See `CLAUDE.md`, `ARCHITECTURE.md`, `DESIGN.md`.
 - No `useEffect` data-fetching. No React Query, no SWR, no client-side fetch.
 
 ### Routing & loading/error states (App Router files, not wrappers)
+
 - Loading UI = a `loading.tsx` segment file (the Generating screen) — not a
   hand-rolled spinner or `<Suspense>` boilerplate.
 - Error UI = `error.tsx` (client) per segment; `not-found.tsx` for unknown
@@ -36,9 +39,11 @@ See `CLAUDE.md`, `ARCHITECTURE.md`, `DESIGN.md`.
 - Code-split heavy client-only widgets with `next/dynamic`, not `React.lazy`.
 
 ### Accessibility — a hard requirement (WCAG 2.1 AA)
+
 Accessibility is non-negotiable, but its rules are NOT duplicated here. The full
 checklist, the project's a11y commands, and the pass bar live in the **`a11y`
 skill** (which defers to `ARCHITECTURE.md` §Accessibility as source of truth).
+
 - Baseline reflexes while writing: semantic HTML first / ARIA second, every
   interactive element keyboard-operable with a visible focus ring, never state
   by color alone, decorative icons `aria-hidden`, meaningful images get `alt`.
@@ -47,11 +52,13 @@ skill** (which defers to `ARCHITECTURE.md` §Accessibility as source of truth).
   (`getByRole`, `getByLabelText`) — if the test can find it, it's accessible.
 
 ### Styling
+
 - Tailwind utility classes in JSX only. No global CSS beyond Tailwind base,
   no CSS Modules, no inline `style` except truly dynamic values.
 - Map tokens/spacing/states from `design.pen` 1:1 — see `DESIGN.md`.
 
 ### Composition & performance (only when warranted)
+
 - Keep components small and single-purpose. Use a compound pattern
   (`<X.Trigger/>`, `<X.Item/>`) ONLY for genuinely coupled sub-parts — most
   MVP components don't need it. Don't pre-abstract.
@@ -59,10 +66,12 @@ skill** (which defers to `ARCHITECTURE.md` §Accessibility as source of truth).
 - No list virtualization — tribes are 10–20 items.
 
 ### Determinism
+
 - Components render server-computed data. Never `Math.random()` or `Date.now()`
   in render — all variation flows through the URL `seed`.
 
 ## When invoked (target: $ARGUMENTS)
+
 1. Read the target component(s)/route(s) with Read.
 2. Verify the Server/Client split — flag needless `'use client'` and any
    client-side data fetching.
