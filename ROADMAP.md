@@ -15,7 +15,7 @@ Full architecture detail: `~/.claude/plans/you-are-a-senior-glimmering-pinwheel.
 - [ ] Sprint 2 — Catalog + identity quality
 - [ ] Sprint 3 — Production polish
 
-**Currently working on**: _Sprint 0 — Foundations (toolchain in progress: jsx-a11y + Prettier + Vitest/RTL + CI done; **next: Playwright** config, then hooks; Vercel deferred to ~Sprint 1)_
+**Currently working on**: _Sprint 0 — Foundations (toolchain COMPLETE: jsx-a11y + Prettier + Vitest/RTL + CI + Playwright all done & green; **next: dev tooling & hooks** — PostToolUse/Stop Claude hooks + pre-commit gate; Vercel deferred to ~Sprint 1)_
 
 ---
 
@@ -52,7 +52,7 @@ Full architecture detail: `~/.claude/plans/you-are-a-senior-glimmering-pinwheel.
 - [x] Set up Vitest + React Testing Library + `@testing-library/jest-dom` + `vitest-axe` — jsdom env, `@/` alias, setup file (jest-dom + axe matchers + RTL cleanup), `vitest-axe.d.ts` type shim for Vitest 4, `.d.ts` ESLint override, `test`/`test:watch`/`typecheck` scripts; all 4 gates green
 - [ ] Link project to Vercel (deferred — interactive login; do when there's something to deploy, ~Sprint 1)
 - [x] Set up CI workflow: `.github/workflows/ci.yml` — lint + typecheck + test + format:check on push/PR to main; Node from `.nvmrc`, pnpm pinned via `packageManager`, `--frozen-lockfile`
-- [ ] Set up Playwright + `@axe-core/playwright` (config only; tests in Sprint 1)
+- [x] Set up Playwright + `@axe-core/playwright` (config only; tests in Sprint 1) — `playwright.config.ts` (Chromium, `build`+`start` webServer), tests isolated in `e2e/` (Vitest excludes it), `e2e` script w/ `--pass-with-no-tests` until Sprint 1
 
 ---
 

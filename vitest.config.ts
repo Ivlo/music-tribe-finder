@@ -1,6 +1,6 @@
 import { resolve } from "node:path";
 import react from "@vitejs/plugin-react";
-import { defineConfig } from "vitest/config";
+import { configDefaults, defineConfig } from "vitest/config";
 
 export default defineConfig({
   // Teaches Vitest to transform JSX/TSX, just like Next does for the app.
@@ -19,5 +19,8 @@ export default defineConfig({
     // Green until Sprint 1 adds real tests; flip to false once tests exist so a
     // mis-globbed suite (0 files picked up) fails loudly instead of passing silently.
     passWithNoTests: true,
+    // e2e/ belongs to Playwright — keep Vitest out of it so the two runners don't
+    // try to execute each other's specs.
+    exclude: [...configDefaults.exclude, "e2e/**"],
   },
 });
