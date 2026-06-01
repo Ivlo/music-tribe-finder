@@ -15,7 +15,7 @@ Full architecture detail: `~/.claude/plans/you-are-a-senior-glimmering-pinwheel.
 - [ ] Sprint 2 — Catalog + identity quality
 - [ ] Sprint 3 — Production polish
 
-**Currently working on**: _Sprint 0 — Foundations (in progress: spike + Deezer decision + Next.js scaffold done; **next: toolchain** — jsx-a11y, Prettier, Vitest/RTL, Playwright, then hooks)_
+**Currently working on**: _Sprint 0 — Foundations (toolchain in progress: jsx-a11y at error level done; **next: Prettier**, then Vitest/RTL, Playwright, CI, then hooks)_
 
 ---
 
@@ -47,7 +47,7 @@ Full architecture detail: `~/.claude/plans/you-are-a-senior-glimmering-pinwheel.
 - [x] **Decide the data strategy from the spike result** → ADR-001 + ADR-002 (Deezer, static pools)
 - [x] ~~Create Spotify developer app + add creds~~ (done, now unused — Deezer needs no auth)
 - [x] Scaffold with `create-next-app@16.2.6` → App Router, TS, ESLint, Tailwind v4, `src/`, `@/*` alias, pnpm
-- [ ] Verify `eslint-plugin-jsx-a11y` rules are at error level in ESLint config
+- [x] Verify `eslint-plugin-jsx-a11y` rules are at error level in ESLint config (added plugin as direct dep; re-applied `flatConfigs.strict` rules at error — 31 rules now fail lint, not warn)
 - [ ] Set up Prettier (+ `eslint-config-prettier` so ESLint and Prettier don't fight)
 - [ ] Set up Vitest + React Testing Library + `@testing-library/jest-dom` + `vitest-axe`
 - [ ] Link project to Vercel
