@@ -1,0 +1,48 @@
+# GitHub Actions workflow: runs the quality gates on a clean machine in the cloud.
+name: CI
+
+# WHEN to run: on pushes to main, and on every pull request targeting main.
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  quality:
+    # The clean virtual machine to run on (latest Ubuntu Linux).
+    runs-on: ubuntu-latest
+    steps:
+      # 1. Clone the repo into the machine.
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      # 2. Install pnpm (version read from the "packageManager" field in package.json).
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
+
+      # 3. Install Node — version pinned by .nvmrc, same as local — and enable the
+      #    pnpm store cache so future runs install faster.
+      - name: Install Node
+        uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: pnpm
+
+      # 4. Install exact dependencies from the lockfile. --frozen-lockfile fails if
+      #    package.json and pnpm-lock.yaml disagree, keeping CI builds deterministic.
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      # 5. The four quality gates, each its own step so a failure points to the culprit.
+      - name: Lint (ESLint + jsx-a11y)
+        run: pnpm lint
+
+      - name: Typecheck (tsc)
+        run: pnpm typecheck
+
+      - name: Test (Vitest)
+        run: pnpm test
+
+      - name: Format check (Prettier)
+        run: pnpm format:check
