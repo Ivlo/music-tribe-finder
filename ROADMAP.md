@@ -15,7 +15,7 @@ Full architecture detail: `~/.claude/plans/you-are-a-senior-glimmering-pinwheel.
 - [ ] Sprint 2 — Catalog + identity quality
 - [ ] Sprint 3 — Production polish
 
-**Currently working on**: _Claude hooks DONE (PostToolUse prettier + blocking Stop lint/typecheck, all paths tested). **Next: pre-commit gate** — pick mechanism (husky / simple-git-hooks / lint-staged / raw) — then Sprint 1._
+**Currently working on**: _Dev tooling & hooks DONE — Claude hooks (PostToolUse prettier + blocking Stop lint/typecheck) + raw `.git/hooks/pre-commit` gate (lint + typecheck + tests), all tested end-to-end. **Next: Sprint 1 — vertical slice** (types & registry first)._
 
 ---
 
@@ -66,9 +66,11 @@ Toolchain (Prettier, Vitest, ESLint) must exist first — these hooks call those
 - [x] Stop: lint + typecheck only (fast feedback; no tests) — `.claude/hooks/check.sh`, blocks (exit 2) on failure + feeds errors back, `stop_hook_active` loop guard; lint scoped to changed **+ untracked** `.ts/.tsx` (`git diff` misses new files), typecheck whole-project; bash 3.2-safe
 - [x] Verify the exact Stop-hook JSON / exit-code schema when installing (decision/reason nesting is finicky) — confirmed against official docs: `stop_hook_active` exists; exit 2 = block + stderr→Claude; shared `lib-node-env.sh` puts nvm Node on PATH (hooks run in a profile-less shell); all 5 paths tested empirically
 
-**Pre-commit gate** (a Git-level hook, not a Claude hook — mechanism TBD: decide at install between husky, `simple-git-hooks`, lint-staged, or raw `.git/hooks/`):
+**Pre-commit gate** (a Git-level hook, not a Claude hook). **Mechanism: raw `.git/hooks/`** — chosen over husky/simple-git-hooks for zero deps on a solo project. Trade-off accepted: the hook is **NOT version-controlled** (lives in `.git/hooks/`), so a fresh clone must recreate it.
 
-- [ ] pre-commit: lint + typecheck + unit + golden determinism (fast local gate; E2E excluded)
+- [x] pre-commit: lint + typecheck + unit + golden determinism (fast local gate; E2E excluded) — `.git/hooks/pre-commit` runs `eslint` + `tsc --noEmit` + `vitest run`, aborts commit on failure (bypass: `--no-verify`); reuses `.claude/hooks/lib-node-env.sh` for nvm Node on PATH; end-to-end tested (green passes, staged type error aborts the commit)
+
+> **Recreate the hook after a fresh clone** (it is not tracked): copy the lint/typecheck/test gate into `.git/hooks/pre-commit` and `chmod +x` it. It sources `.claude/hooks/lib-node-env.sh` (which _is_ tracked).
 
 ---
 
