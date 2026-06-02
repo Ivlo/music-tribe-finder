@@ -15,7 +15,7 @@ Full architecture detail: `~/.claude/plans/you-are-a-senior-glimmering-pinwheel.
 - [ ] Sprint 2 — Catalog + identity quality
 - [ ] Sprint 3 — Production polish
 
-**Currently working on**: _Sprint 0 DONE (toolchain complete & green in CI; Vercel relocated to Sprint 1 § Deploy). **Next: dev tooling & hooks** — PostToolUse/Stop Claude hooks + pre-commit gate — then Sprint 1._
+**Currently working on**: _Claude hooks DONE (PostToolUse prettier + blocking Stop lint/typecheck, all paths tested). **Next: pre-commit gate** — pick mechanism (husky / simple-git-hooks / lint-staged / raw) — then Sprint 1._
 
 ---
 
@@ -62,9 +62,9 @@ Toolchain (Prettier, Vitest, ESLint) must exist first — these hooks call those
 
 **Claude Code hooks** (`.claude/settings.json`):
 
-- [ ] PostToolUse: `prettier --write` on edited `.ts`/`.tsx` (auto-format, non-blocking)
-- [ ] Stop: lint + typecheck only (fast feedback; no tests)
-- [ ] Verify the exact Stop-hook JSON / exit-code schema when installing (decision/reason nesting is finicky)
+- [x] PostToolUse: `prettier --write` on edited `.ts`/`.tsx` (auto-format, non-blocking) — `.claude/hooks/format.sh`, matcher `Edit|Write`, filters extension, always exits 0
+- [x] Stop: lint + typecheck only (fast feedback; no tests) — `.claude/hooks/check.sh`, blocks (exit 2) on failure + feeds errors back, `stop_hook_active` loop guard; lint scoped to changed **+ untracked** `.ts/.tsx` (`git diff` misses new files), typecheck whole-project; bash 3.2-safe
+- [x] Verify the exact Stop-hook JSON / exit-code schema when installing (decision/reason nesting is finicky) — confirmed against official docs: `stop_hook_active` exists; exit 2 = block + stderr→Claude; shared `lib-node-env.sh` puts nvm Node on PATH (hooks run in a profile-less shell); all 5 paths tested empirically
 
 **Pre-commit gate** (a Git-level hook, not a Claude hook — mechanism TBD: decide at install between husky, `simple-git-hooks`, lint-staged, or raw `.git/hooks/`):
 
