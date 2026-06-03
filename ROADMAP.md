@@ -15,7 +15,7 @@ Full architecture detail: `~/.claude/plans/you-are-a-senior-glimmering-pinwheel.
 - [ ] Sprint 2 — Catalog + identity quality
 - [ ] Sprint 3 — Production polish
 
-**Currently working on**: _Dev tooling & hooks DONE — Claude hooks (PostToolUse prettier + blocking Stop lint/typecheck) + raw `.git/hooks/pre-commit` gate (lint + typecheck + tests), all tested end-to-end. **Next: Sprint 1 — vertical slice** (types & registry first)._
+**Currently working on**: _Sprint 1 started. Shared types DONE (`src/lib/types.ts` — `ActivityProfile`, `NormalizedTrack`, `Tribe`, `TribeItem` + `AttributeKey`/`Mood` aliases + `AttributeRange`; `Record<AttributeKey, …>` keeps the two attribute shapes in sync), typecheck + lint green. **Next: `activity-registry`** (`ActivityEntry` type + 6 activities)._
 
 ---
 
@@ -78,7 +78,7 @@ Toolchain (Prettier, Vitest, ESLint) must exist first — these hooks call those
 
 ### Types & registry
 
-- [ ] Define TypeScript types: `ActivityProfile`, `Tribe`, `TribeItem`, `NormalizedTrack`
+- [x] Define TypeScript types: `ActivityProfile`, `Tribe`, `TribeItem`, `NormalizedTrack` — `src/lib/types.ts`; `AttributeKey`/`Mood` literal-union aliases, `AttributeRange` interface, `Record<AttributeKey, …>` shares the attribute keys between profile (ranges) and tribe (final values)
 - [ ] Build `activity-registry` with 6 activities covering the energy/mood spectrum:
   - Snowboard (high energy, fast tempo, electronic/trap)
   - Skate (high energy, mid-fast tempo, punk/hip-hop)
