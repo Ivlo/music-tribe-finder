@@ -15,7 +15,7 @@ Full architecture detail: `~/.claude/plans/you-are-a-senior-glimmering-pinwheel.
 - [ ] Sprint 2 — Catalog + identity quality
 - [ ] Sprint 3 — Production polish
 
-**Currently working on**: _Sprint 1 started. Shared types DONE (`src/lib/types.ts` — `ActivityProfile`, `NormalizedTrack`, `Tribe`, `TribeItem` + `AttributeKey`/`Mood` aliases + `AttributeRange`; `Record<AttributeKey, …>` keeps the two attribute shapes in sync), typecheck + lint green. **Next: `activity-registry`** (`ActivityEntry` type + 6 activities)._
+**Currently working on**: _Sprint 1. Shared types DONE. `activity-registry` DONE — `ActivityEntry` + `DeezerSource` (discriminated union playlist|chart) contracts in `types.ts`; `src/lib/activity-registry.ts` with 6 activities (ordered list + `getActivity(id)` lookup), `poolRef` explicit, `trackLimit` per-entry, `sources` are `TODO-*` placeholders (real Deezer ids land with `deezer-harvest`). Typecheck + lint green. **Next: structural test** for the registry (unique ids, valid mood enum, sane ranges), then `profile-compiler`._
 
 ---
 
@@ -79,14 +79,14 @@ Toolchain (Prettier, Vitest, ESLint) must exist first — these hooks call those
 ### Types & registry
 
 - [x] Define TypeScript types: `ActivityProfile`, `Tribe`, `TribeItem`, `NormalizedTrack` — `src/lib/types.ts`; `AttributeKey`/`Mood` literal-union aliases, `AttributeRange` interface, `Record<AttributeKey, …>` shares the attribute keys between profile (ranges) and tribe (final values)
-- [ ] Build `activity-registry` with 6 activities covering the energy/mood spectrum:
+- [x] Build `activity-registry` with 6 activities covering the energy/mood spectrum:
   - Snowboard (high energy, fast tempo, electronic/trap)
   - Skate (high energy, mid-fast tempo, punk/hip-hop)
   - Gym (high energy, high tempo, hype/rap/electronic)
   - Coding (mid energy, mid tempo, instrumental/electronic)
   - Night Focus (low-mid energy, low tempo, ambient/lo-fi)
   - Chill (low energy, slow tempo, acoustic/indie)
-  - [ ] Each entry: `id`, `label`, `icon`, Deezer source refs (playlist / genre-chart ids), authored attributes (energy/tempo/valence/…), name-pool key
+  - [x] Each entry: `id`, `label`, `icon`, Deezer source refs (playlist / genre-chart ids), authored attributes (energy/tempo/valence/…), name-pool key
 
 ### Pure modules
 
