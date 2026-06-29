@@ -15,7 +15,7 @@ Full architecture detail: `~/.claude/plans/you-are-a-senior-glimmering-pinwheel.
 - [ ] Sprint 2 — Catalog + identity quality
 - [ ] Sprint 3 — Production polish
 
-**Currently working on**: _Sprint 1. Types DONE. `activity-registry` + structural test DONE. `profile-compiler` DONE — seeded FNV-1a + Mulberry32 PRNG, jitters attribute targets within `[min, max]`, determinism + bounds + passthrough tests green. **Next: `tribe-composer`** — `(profile, tracks, seed) → Tribe`, deterministic._
+**Currently working on**: _Sprint 1. Types, registry, profile-compiler, tribe-composer all DONE with tests (44 assertions green). **Next: `deezer-harvest` + `track-source`** — install Zod, harvest script, pool loader._
 
 ---
 
@@ -93,8 +93,8 @@ Toolchain (Prettier, Vitest, ESLint) must exist first — these hooks call those
 
 - [x] Implement `profile-compiler`: `(activity, seed) → ActivityProfile`, deterministic — FNV-1a hash + Mulberry32 PRNG, jitters attribute targets within authored `[min, max]`
 - [x] Unit tests for `profile-compiler`: determinism, variation across seeds, bounds, passthrough fields (32 assertions total)
-- [ ] Implement `tribe-composer`: `(profile, tracks, seed) → Tribe`, deterministic
-- [ ] Unit tests for `tribe-composer`: same inputs → same output; different seeds → different but valid tribes
+- [x] Implement `tribe-composer`: `(profile, tracks, seed) → Tribe`, deterministic — inline mood data (names, tagline, description, keywords), Fisher-Yates shuffle, PRNG shared via `prng.ts`
+- [x] Unit tests for `tribe-composer`: determinism, sampling, items mapping, identity, attributes, metadata (12 assertions)
 
 ### Track source (build-time harvest + request-time load)
 
