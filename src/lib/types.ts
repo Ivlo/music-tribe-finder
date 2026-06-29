@@ -64,6 +64,8 @@ export interface ActivityEntry {
  */
 export interface ActivityProfile {
   activityId: string;
+  label: string; // display name, denormalized for rendering
+  icon: string; // emoji or icon key, denormalized for rendering
   seed: string;
   attributes: Record<AttributeKey, AttributeRange>;
   poolRef: string; // → src/data/pools/<poolRef>.json

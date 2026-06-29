@@ -30,6 +30,8 @@ export function compileProfile(
 
   return {
     activityId: entry.id,
+    label: entry.label,
+    icon: entry.icon,
     seed,
     attributes,
     poolRef: entry.poolRef,

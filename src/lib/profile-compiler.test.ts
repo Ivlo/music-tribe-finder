@@ -58,9 +58,11 @@ describe("profile-compiler", () => {
   });
 
   describe("passthrough fields", () => {
-    it("copies activityId, seed, poolRef, trackLimit, moodPrimary, namePoolKey from entry", () => {
+    it("copies activityId, label, icon, seed, poolRef, trackLimit, moodPrimary, namePoolKey from entry", () => {
       const profile = compileProfile(coding, "test-seed");
       expect(profile.activityId).toBe(coding.id);
+      expect(profile.label).toBe(coding.label);
+      expect(profile.icon).toBe(coding.icon);
       expect(profile.seed).toBe("test-seed");
       expect(profile.poolRef).toBe(coding.poolRef);
       expect(profile.trackLimit).toBe(coding.trackLimit);
